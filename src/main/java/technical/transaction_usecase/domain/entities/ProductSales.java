@@ -1,4 +1,4 @@
-package technical.transaction_usecase.query.model.entities;
+package technical.transaction_usecase.domain.entities;
 
 import java.util.HashSet;
 import java.util.Set;
