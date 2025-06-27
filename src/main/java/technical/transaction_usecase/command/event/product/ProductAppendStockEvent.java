@@ -11,9 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductUpdatedEvent implements Serializable{
+public class ProductAppendStockEvent implements Serializable {
     private String id;
-    private String name;
-    private int price;
-    private int stock;
+    private int quantity;
 }

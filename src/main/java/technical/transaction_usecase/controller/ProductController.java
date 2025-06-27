@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import technical.transaction_usecase.command.command.CreateProductCommand;
-import technical.transaction_usecase.controller.dto.CreateOrderRequest;
+import technical.transaction_usecase.command.command.product.CreateProductCommand;
+import technical.transaction_usecase.command.command.product.SellProductCommand;
+import technical.transaction_usecase.controller.dto.CreateProductRequest;
+import technical.transaction_usecase.controller.dto.SellProductRequest;
 
 @RestController
 @RequestMapping("/products")
@@ -19,15 +21,27 @@ public class ProductController {
     }
 
     @PostMapping
-    public String createProduct(@RequestBody CreateOrderRequest request) {
-         String orderId = "product-" + System.currentTimeMillis();
+    public String createProduct(@RequestBody CreateProductRequest request) {
+         String id = "product-" + System.currentTimeMillis();
         commandGateway.send(new CreateProductCommand(
-            orderId,
+            id,
             request.name(),
             request.price(),
             0
         ));
-        return "Order created: " + orderId;
+        return "Product created: " + id;
+    }
+
+    @PostMapping("/sell")
+    public String sellProduct(@RequestBody SellProductRequest request) {
+        commandGateway.send(new SellProductCommand(request.id(), request.quantity()));
+        return "Product sold: " + request.id();
+    }
+
+    @PostMapping("/append-stock-product")
+    public String appendStockProduct(@RequestBody SellProductRequest request) {
+        commandGateway.send(new SellProductCommand(request.id(), request.quantity()));
+        return "Product stock appended: " + request.id();
     }
 
 }

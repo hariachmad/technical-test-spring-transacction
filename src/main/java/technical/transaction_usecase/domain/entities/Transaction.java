@@ -15,17 +15,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "transactions")
+// @Table(name = "transactions")
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
+// @Entity
 public class Transaction {
-    @Id
+    // @Id
     String id;
     Instant lastUpdated;
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinTable(name = "invoice", joinColumns = @JoinColumn(name = "transaction_id"), inverseJoinColumns = @JoinColumn(name = "product_sales_id"))
+    // @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    // @JoinTable(name = "invoice", joinColumns = @JoinColumn(name = "transaction_id"), inverseJoinColumns = @JoinColumn(name = "product_sales_id"))
     public Set<ProductSales> productSales= new HashSet<>();
 }

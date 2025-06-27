@@ -9,12 +9,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class UpdateProductCommand {
+@NoArgsConstructor
+public class SellProductCommand {
     @TargetAggregateIdentifier
     private String id;
-    private String name;
-    private int price;
-    private int stock;
+    private int qty;
 }

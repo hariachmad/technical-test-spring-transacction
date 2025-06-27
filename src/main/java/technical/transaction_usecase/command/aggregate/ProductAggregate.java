@@ -6,12 +6,16 @@ import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
-import technical.transaction_usecase.command.command.CreateProductCommand;
-import technical.transaction_usecase.command.command.DeleteProductCommand;
-import technical.transaction_usecase.command.command.UpdateProductCommand;
-import technical.transaction_usecase.command.event.ProductCreatedEvent;
-import technical.transaction_usecase.command.event.ProductDeletedEvent;
-import technical.transaction_usecase.command.event.ProductUpdatedEvent;
+import technical.transaction_usecase.command.command.product.AppendStockProductCommand;
+import technical.transaction_usecase.command.command.product.CreateProductCommand;
+import technical.transaction_usecase.command.command.product.DeleteProductCommand;
+import technical.transaction_usecase.command.command.product.SellProductCommand;
+import technical.transaction_usecase.command.command.product.UpdateProductCommand;
+import technical.transaction_usecase.command.event.product.ProductAppendStockEvent;
+import technical.transaction_usecase.command.event.product.ProductCreatedEvent;
+import technical.transaction_usecase.command.event.product.ProductDeletedEvent;
+import technical.transaction_usecase.command.event.product.ProductSoldEvent;
+import technical.transaction_usecase.command.event.product.ProductUpdatedEvent;
 
 @Aggregate
 public class ProductAggregate {
@@ -31,6 +35,28 @@ public class ProductAggregate {
     }
 
     @CommandHandler
+    public void handle(AppendStockProductCommand command){
+        if (command.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero for product ID: " + this.id);
+        }
+        AggregateLifecycle.apply(new ProductAppendStockEvent(
+            command.getId(),
+            command.getQuantity()
+        ));
+    }
+
+    @CommandHandler
+    public void handle(SellProductCommand command){
+        if (this.stock < command.getQty()) {
+            throw new IllegalArgumentException("Insufficient stock for product ID: " + this.id);
+        }
+        AggregateLifecycle.apply(new ProductSoldEvent(
+            command.getId(),
+            command.getQty()
+        ));
+    }
+
+    @CommandHandler
     public void handle(UpdateProductCommand command) {
         AggregateLifecycle.apply(new ProductUpdatedEvent(
                 command.getId(),
@@ -45,6 +71,24 @@ public class ProductAggregate {
     }
 
     @EventSourcingHandler
+    public void on(ProductSoldEvent event) {
+        if (this.stock < event.getQuantity()) {
+            throw new IllegalArgumentException("Insufficient stock for product ID: " + this.id);
+        }
+        this.stock -= event.getQuantity();
+        System.out.println("Product sold successfully. Remaining stock: " + this.stock);
+    }
+
+    @EventSourcingHandler
+    public void on(ProductAppendStockEvent event) {
+        if (event.getQuantity() <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero for product ID: " + this.id);
+        }
+        this.stock += event.getQuantity();
+        System.out.println("Stock appended successfully. New stock: " + this.stock);
+    }
+
+    @EventSourcingHandler
     public void on(ProductCreatedEvent event) {
         try {
             this.id = event.getId();
@@ -55,7 +99,6 @@ public class ProductAggregate {
         } catch (Exception e) {
             System.out.println("Error creating product aggregate: {}" + e.getMessage());
         }
-
     }
 
     @EventSourcingHandler

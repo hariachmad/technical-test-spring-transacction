@@ -1,10 +1,10 @@
 package technical.transaction_usecase.controller.dto;
 
-public record CreateOrderRequest(
+public record CreateProductRequest(
     String name,
     int price
 ) {
-    public CreateOrderRequest {
+    public CreateProductRequest {
         if (price <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero");
         }

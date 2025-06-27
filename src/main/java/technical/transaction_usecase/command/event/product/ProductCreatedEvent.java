@@ -1,4 +1,4 @@
-package technical.transaction_usecase.command.event;
+package technical.transaction_usecase.command.event.product;
 
 import java.io.Serializable;
 

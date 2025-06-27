@@ -1,4 +1,4 @@
-package technical.transaction_usecase.command.command;
+package technical.transaction_usecase.command.command.product;
 
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
 
