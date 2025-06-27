@@ -1,5 +1,7 @@
 package technical.transaction_usecase.controller;
 
+import java.util.List;
+
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,18 +10,24 @@ import org.springframework.web.bind.annotation.RestController;
 
 import technical.transaction_usecase.command.command.product.AppendStockProductCommand;
 import technical.transaction_usecase.command.command.product.CreateProductCommand;
-import technical.transaction_usecase.command.command.product.SellProductCommand;
 import technical.transaction_usecase.controller.dto.AppendStockProductRequest;
 import technical.transaction_usecase.controller.dto.CreateProductRequest;
-import technical.transaction_usecase.controller.dto.SellProductRequest;
+import technical.transaction_usecase.query.model.ProductView;
+import technical.transaction_usecase.query.service.ProductService;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/products")
 public class ProductController {
     private final CommandGateway commandGateway;
+    private final ProductService productService;
 
-    public ProductController(CommandGateway commandGateway) {
+    public ProductController(CommandGateway commandGateway, ProductService productService) {
         this.commandGateway = commandGateway;
+        this.productService = productService;
     }
 
     @PostMapping
@@ -34,11 +42,22 @@ public class ProductController {
         return "Product created: " + id;
     }
 
-    @PostMapping("/sell")
-    public String sellProduct(@RequestBody SellProductRequest request) {
-        commandGateway.send(new SellProductCommand(request.id(), request.quantity()));
-        return "Product sold: " + request.id();
+    // @PostMapping("/sell")
+    // public String sellProduct(@RequestBody SellProductRequest request) {
+    //     commandGateway.send(new SellProductCommand(request.id(), request.quantity()));
+    //     return "Product sold: " + request.id();
+    // }
+
+    @GetMapping
+    public List<ProductView> getAllProducts() {
+        return productService.getAllProducts();
     }
+
+    @GetMapping("/by-id")
+    public ProductView getProductById(@RequestParam String id) {
+        return productService.getProductById(id);
+    }
+    
 
     @PostMapping("/append-stock-product")
     public String appendStockProduct(@RequestBody AppendStockProductRequest request) {
