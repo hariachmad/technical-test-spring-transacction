@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.axonframework.eventhandling.EventHandler;
 import org.springframework.stereotype.Component;
 
+import jakarta.transaction.Transactional;
 import technical.transaction_usecase.command.event.product.ProductAppendStockEvent;
 import technical.transaction_usecase.command.event.product.ProductCreatedEvent;
 import technical.transaction_usecase.command.event.product.ProductDeletedEvent;
@@ -15,6 +16,7 @@ import technical.transaction_usecase.query.model.ProductView;
 import technical.transaction_usecase.query.repository.ProductRepository;
 
 @Component
+@Transactional
 public class ProductProjection {
     private final ProductRepository productRepository;
 
