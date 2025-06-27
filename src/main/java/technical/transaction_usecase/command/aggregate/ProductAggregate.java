@@ -36,6 +36,9 @@ public class ProductAggregate {
 
     @CommandHandler
     public void handle(AppendStockProductCommand command){
+        if (command.getId() == null || command.getId().isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be null");
+        }
         if (command.getQuantity() <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than zero for product ID: " + this.id);
         }

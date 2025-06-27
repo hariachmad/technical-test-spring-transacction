@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import technical.transaction_usecase.command.command.product.AppendStockProductCommand;
 import technical.transaction_usecase.command.command.product.CreateProductCommand;
 import technical.transaction_usecase.command.command.product.SellProductCommand;
+import technical.transaction_usecase.controller.dto.AppendStockProductRequest;
 import technical.transaction_usecase.controller.dto.CreateProductRequest;
 import technical.transaction_usecase.controller.dto.SellProductRequest;
 
@@ -39,8 +41,8 @@ public class ProductController {
     }
 
     @PostMapping("/append-stock-product")
-    public String appendStockProduct(@RequestBody SellProductRequest request) {
-        commandGateway.send(new SellProductCommand(request.id(), request.quantity()));
+    public String appendStockProduct(@RequestBody AppendStockProductRequest request) {
+        commandGateway.send(new AppendStockProductCommand(request.id(), request.quantity()));
         return "Product stock appended: " + request.id();
     }
 
