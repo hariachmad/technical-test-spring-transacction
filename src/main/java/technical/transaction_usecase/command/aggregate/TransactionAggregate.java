@@ -11,11 +11,16 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 
 import technical.transaction_usecase.command.command.transaction.CreateTransactionCommand;
+import technical.transaction_usecase.command.command.transaction.PaidTransactionCommand;
 import technical.transaction_usecase.command.common.PaidStatusEnum;
 import technical.transaction_usecase.command.event.transaction.TransactionCreatedEvent;
+import technical.transaction_usecase.command.event.transaction.TransactionPaidEvent;
 
 @Aggregate
 public class TransactionAggregate {
+    public TransactionAggregate() {
+    }
+
     @AggregateIdentifier
     private String id;
     List<Map<String,Object>> products;
@@ -30,10 +35,23 @@ public class TransactionAggregate {
         ));
     }
 
+    @CommandHandler
+    public void handle(PaidTransactionCommand command){
+        AggregateLifecycle.apply(new TransactionPaidEvent(
+            command.getId(),
+            command.getPaidStatus()
+        ));
+    }
+
     @EventSourcingHandler
     public void on(TransactionCreatedEvent event) {
         this.id = event.getId();
         this.products = event.getProducts() != null ? event.getProducts() : new ArrayList<>();
         this.paidStatus = event.getPaidStatus();
+    }
+
+    @EventSourcingHandler
+    public void on(TransactionPaidEvent event) {
+        this.paidStatus = PaidStatusEnum.PAID;
     }
 }

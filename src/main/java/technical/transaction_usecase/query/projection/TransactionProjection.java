@@ -10,7 +10,9 @@ import org.springframework.stereotype.Component;
 
 import jakarta.transaction.Transactional;
 import technical.transaction_usecase.command.command.product.SellProductCommand;
+import technical.transaction_usecase.command.common.PaidStatusEnum;
 import technical.transaction_usecase.command.event.transaction.TransactionCreatedEvent;
+import technical.transaction_usecase.command.event.transaction.TransactionPaidEvent;
 import technical.transaction_usecase.query.model.ProductSalesView;
 import technical.transaction_usecase.query.model.ProductView;
 import technical.transaction_usecase.query.model.TransactionView;
@@ -32,6 +34,14 @@ public class TransactionProjection {
         this.productSalesRepository = productSalesRepository;
         this.transactionRepository = transactionRepository;
         this.commandGateway = commandGateway;
+    }
+
+    @EventHandler
+    public void on(TransactionPaidEvent event){
+        TransactionView transactionView = transactionRepository.findById(event.getId())
+                .orElseThrow(() -> new RuntimeException("Transaction not found with ID: " + event.getId()));
+        transactionView.setStatus(PaidStatusEnum.PAID);
+        transactionRepository.save(transactionView);
     }
 
     @EventHandler

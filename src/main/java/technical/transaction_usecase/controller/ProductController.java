@@ -12,12 +12,11 @@ import technical.transaction_usecase.command.command.product.AppendStockProductC
 import technical.transaction_usecase.command.command.product.CreateProductCommand;
 import technical.transaction_usecase.controller.dto.AppendStockProductRequest;
 import technical.transaction_usecase.controller.dto.CreateProductRequest;
+import technical.transaction_usecase.controller.dto.product.GetProductResponse;
 import technical.transaction_usecase.query.model.ProductView;
 import technical.transaction_usecase.query.service.ProductService;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/products")
@@ -49,15 +48,12 @@ public class ProductController {
     // }
 
     @GetMapping
-    public List<ProductView> getAllProducts() {
-        return productService.getAllProducts();
+    public List<GetProductResponse> getAllProducts() {
+        List<ProductView> products = productService.getAllProducts();
+        return products.stream()
+                .map(product -> new GetProductResponse(product.getId(), product.getName(), product.getPrice(), product.getStock()))
+                .toList();
     }
-
-    @GetMapping("/by-id")
-    public ProductView getProductById(@RequestParam String id) {
-        return productService.getProductById(id);
-    }
-    
 
     @PostMapping("/append-stock-product")
     public String appendStockProduct(@RequestBody AppendStockProductRequest request) {
